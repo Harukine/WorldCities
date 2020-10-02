@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorldCities.Data;
 using WorldCities.Data.Models;
+using System.Linq.Dynamic.Core;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -24,21 +25,27 @@ namespace WorldCities.Controllers
         }
 
         // GET: api/Cities
-        // GET: api/Cities?pageIndex=0&pageSize=10
-        // GET: api/CIties?pageIndex=0&pageSize=10&sortColumn=name&sortOrder=asc
+        // GET: api/Cities/?pageIndex=0&pageSize=10
+        // GET: api/CIties/?pageIndex=0&pageSize=10&sortColumn=name&sortOrder=asc
+        // GET: api/Cities/?pageIndex=0&pageSize=10&sortColumn=name&sortOrder=asc&filterColumn=name&filterQuery=york
         [HttpGet]
         public async Task<ActionResult<ApiResult<City>>> GetCities(
             int pageIndex = 0,
             int pageSize = 10,
             string sortColumn = null,
-            string sortOrder = null)
+            string sortOrder = null,
+            string filterColumn = null,
+            string filterQuery = null)
         {
+
             return await ApiResult<City>.CreateAsync(
                 _context.Cities,
                 pageIndex,
                 pageSize,
                 sortColumn,
-                sortOrder);
+                sortOrder,
+                filterColumn,
+                filterQuery);
         }
 
         // GET: api/Cities/5

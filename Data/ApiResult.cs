@@ -66,6 +66,16 @@ namespace WorldCities.Data
         /// Sorting Order ("ASC", "DESC" or null if none set)
         /// </summary>
         public string SortOrder { get; set; }
+
+        /// <summary>
+        /// Filter Column name (or null if none set)
+        /// </summary>
+        public string FilterColumn { get; set; }
+
+        /// <summary>
+        /// Filter Query string (to be used within the given FilterColumn)
+        /// </summary>
+        public string FilterQuery { get; set; }
         #endregion
 
         /// <summary>
@@ -77,7 +87,9 @@ namespace WorldCities.Data
             int pageIndex,
             int pageSize,
             string sortColumn,
-            string sortOrder)
+            string sortOrder,
+            string filterColumn,
+            string filterQuery)
         {
             Data = data;
             PageIndex = pageIndex;
@@ -86,26 +98,45 @@ namespace WorldCities.Data
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
             SortColumn = sortColumn;
             SortOrder = sortOrder;
+            FilterColumn = filterColumn;
+            FilterQuery = filterQuery;
         }
 
         #region Methods
-        /// <summary>Pages and/or sorts a IQueryable source.</summary>
+        /// <summary>Pages, sorts and/or filters a IQueryable source.</summary>
         /// <param name="source">An IQueryable source of generic type</param>
         /// <param name="pageIndex">Zero-based current page index(0 = first page)</param>
         /// <param name="pageSize">The actual size of each page</param>
         /// <param name="sortColumn">The sorting column name</param>
         /// <param name="sortOrder">The sorting order("ASC" or "DESC")</param>
-        /// <returns>A object containing the paged/sorted result and all the relevant
-        /// paging/sorting navigation info.</returns>
+        /// <param name="filterColumn">The filtering column</param>
+        /// <param name="filterQuery">The filtering query (value to lookup)</param>
+        /// <returns>A object containing the paged/sorted/filtering result and all the relevant
+        /// paging/sorting/filtering navigation info.</returns>
         public static async Task<ApiResult<T>> CreateAsync(
             IQueryable<T> source,
             int pageIndex,
             int pageSize,
             string sortColumn = null,
-            string sortOrder = null)
+            string sortOrder = null,
+            string filterColumn = null,
+            string filterQuery = null)
         {
+
+            // validate and apply filtering options
+            if (!String.IsNullOrEmpty(filterColumn)
+                && !String.IsNullOrEmpty(filterQuery)
+                && IsValidProperty(filterColumn))
+            {
+                source = source.Where(
+                    String.Format("{0}.Contains(@0)",
+                    filterColumn),
+                    filterQuery);
+            }
+
             var count = await source.CountAsync();
 
+            // validate sort options
             if (!String.IsNullOrEmpty(sortColumn) && IsValidProperty(sortColumn))
             {
                 sortOrder = !String.IsNullOrEmpty(sortOrder) && sortOrder.ToUpper() == "ASC" ?
@@ -125,7 +156,9 @@ namespace WorldCities.Data
                 pageIndex,
                 pageSize,
                 sortColumn,
-                sortOrder);
+                sortOrder,
+                filterColumn,
+                filterQuery);
         }
 
         /// <summary>Checks if the given property name exists to protect

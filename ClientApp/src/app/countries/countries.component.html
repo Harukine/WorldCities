@@ -5,11 +5,11 @@
 <p *ngIf="!countries"><em>Loading...</em></p>
 
 <mat-form-field [hidden]="!countries">
-    <input matInput (keyup)="loadData($event.target.value)" placeholder="Filter by name (or part of it...)">
+    <input matInput (keyup)="loadData($event.target.value)" placeholder="Filter by name (or part of it)...">
 </mat-form-field>
 
 <table mat-table [dataSource]="countries" class="mat-elevation-z8" [hidden]="!countries" matSort
-    (martSortChange)="loadData()" matSortActive="{{defaultSortColumn}}" martSortDirection="{{defaultSortOrder}}">
+    (matSortChange)="loadData()" matSortActive="{{defaultSortColumn}}" matSortDirection="{{defaultSortOrder}}">
 
     <!-- Id Column -->
     <ng-container matColumnDef="id">
@@ -40,5 +40,5 @@
 </table>
 
 <!-- Pagination directive -->
-<mat-paginator [hidden]="!countries" (page)="pageEvent = getData($event)" [pageSize]="10"
-    [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
+<mat-paginator [hidden]="!countries" (page)="getData($event)" [pageSize]="10" [pageSizeOptions]="[10, 20, 50]"
+    showFirstLastButtons></mat-paginator>

@@ -1,9 +1,10 @@
-import { Component, Inject, ViewChild } from "@angular/core";
+import { Component, Inject, ViewChild } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { MatTableDataSource } from "@angular/material/table";
+import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { Country } from "./country";
+
+import { Country } from './country';
 
 @Component({
     selector: 'app-countries',
@@ -27,8 +28,8 @@ export class CountriesComponent {
 
     constructor(
         private http: HttpClient,
-        @Inject('BASE_URL') private baseUrl: string
-    ) { }
+        @Inject('BASE_URL') private baseUrl: string) {
+    }
 
     ngOnInit() {
         this.loadData(null);
@@ -55,7 +56,7 @@ export class CountriesComponent {
         if (this.filterQuery) {
             params = params
                 .set("filterColumn", this.defaultFilterColumn)
-                .set("filterQuery", this.filterQuery)
+                .set("filterQuery", this.filterQuery);
         }
 
         this.http.get<any>(url, { params })
